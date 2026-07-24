@@ -27,6 +27,9 @@ Zvolený režim se ukládá do `localStorage` a přežije zavření aplikace.
 ### Zachycení klávesnice na mobilu
 Mobilní prohlížeče ignorují stisknuté klávesy pokud stránka nemá fokus na input elementu. Proto je ve stránce skrytý `<input>`, který drží fokus po celou dobu. Znaky se čtou přes `input` event (spolehlivější než `keydown` na mobilech) a input se po každém znaku okamžitě vyprázdní. Atribut `inputmode` řídí, zda se zobrazí softwarová klávesnice — `none` ji potlačí, `text` ji zobrazí.
 
+### Přizpůsobení při softwarové klávesnici
+Při zobrazení softwarové klávesnice prohlížeče nespolehlivě aktualizují `100dvh`, takže písmeno by skončilo za klávesnicí. Aplikace proto naslouchá na `visualViewport` API, které vrací skutečnou výšku a offset viditelné oblasti. Body se dynamicky přizpůsobí těmto hodnotám, takže písmeno zůstane vždy vycentrované v prostoru nad klávesnicí.
+
 ### Zobrazení
 Velikost písmene je nastavena pomocí `min(80vw, 80vh)` — vždy zabere 80 % kratší strany obrazovky, ať je orientace jakákoliv. Písmeno se objeví s krátkou animací (opacity + scale). Pokud je stejná klávesa stisknuta opakovaně, animace se resetuje. Hint „Stiskni klávesu A–Z" se při prvním stisku trvale skryje.
 

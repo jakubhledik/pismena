@@ -89,27 +89,7 @@
       height: 1.4rem;
     }
 
-    /* Tooltip */
-    #kbd-toggle::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      top: calc(100% + 0.5rem);
-      right: 0;
-      background: rgba(0, 0, 0, 0.7);
-      color: #ccc;
-      font-size: 0.75rem;
-      white-space: nowrap;
-      padding: 0.3rem 0.6rem;
-      border-radius: 0.4rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
-    }
 
-    #kbd-toggle:hover::after,
-    #kbd-toggle:focus-visible::after {
-      opacity: 1;
-    }
   </style>
 </head>
 <body>
@@ -234,6 +214,24 @@
       if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
       if (/^[a-zA-Z]$/.test(e.key)) showLetter(e.key.toUpperCase());
     });
+
+    // --- Visual viewport — přizpůsobení při zobrazení softwarové klávesnice ---
+    function updateViewport() {
+      const vv = window.visualViewport;
+      if (!vv) return;
+      // Posuň a ořízni body na viditelnou oblast
+      document.body.style.height = vv.height + 'px';
+      document.body.style.top = vv.offsetTop + 'px';
+      document.body.style.left = vv.offsetLeft + 'px';
+      document.body.style.position = 'fixed';
+      document.body.style.width = vv.width + 'px';
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewport);
+      window.visualViewport.addEventListener('scroll', updateViewport);
+      updateViewport();
+    }
 
     // --- Service worker ---
     if ('serviceWorker' in navigator) {
