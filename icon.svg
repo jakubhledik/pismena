@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Pozadí — kruh -->
+  <circle cx="256" cy="256" r="256" fill="#1a1a2e"/>
+  <!-- Písmeno A -->
+  <text
+    x="256"
+    y="370"
+    text-anchor="middle"
+    font-family="system-ui, sans-serif"
+    font-weight="bold"
+    font-size="420"
+    fill="#ffffff"
+  >A</text>
+</svg>
