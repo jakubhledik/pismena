@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Písmena</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #letter {
+      color: #ffffff;
+      font-size: min(80vw, 80vh);
+      font-weight: bold;
+      line-height: 1;
+      user-select: none;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: opacity 0.1s ease, transform 0.15s ease;
+    }
+
+    #letter.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 2rem;
+      color: #555577;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      transition: opacity 0.5s ease;
+    }
+
+    #hint.hidden {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="letter"></div>
+  <div id="hint">Stiskni klávesu A–Z</div>
+
+  <script>
+    const letterEl = document.getElementById('letter');
+    const hintEl = document.getElementById('hint');
+    let hideTimer = null;
+    let hintHidden = false;
+
+    function showLetter(char) {
+      // Zobraz písmeno
+      letterEl.classList.remove('visible');
+      letterEl.textContent = char;
+
+      // Malá pauza aby animace proběhla znovu i při stejném písmenu
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          letterEl.classList.add('visible');
+        });
+      });
+
+      // Přečti nahlas
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(char);
+        utt.lang = 'cs-CZ';
+        utt.rate = 0.8;
+        window.speechSynthesis.speak(utt);
+      }
+
+      // Skryj hint po prvním stisku
+      if (!hintHidden) {
+        hintEl.classList.add('hidden');
+        hintHidden = true;
+      }
+
+      // Skryj písmeno po 3 sekundách
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        letterEl.classList.remove('visible');
+      }, 3000);
+    }
+
+    // Registrace service workeru pro PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      // Ignoruj modifier klávesy a opakované stisky při držení
+      if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+
+      const key = e.key;
+      if (/^[a-zA-Z]$/.test(key)) {
+        showLetter(key.toUpperCase());
+      }
+    });
+  </script>
+</body>
+</html>
